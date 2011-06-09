@@ -43,6 +43,16 @@ class Application extends \Pimple
     public function compile()
     {
         $app = $this;
-        echo $app['twig']->render('hola.twig');
+
+        if ($handle = opendir($app['twig.templates'])) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != ".."){
+                    $out = $app['twig']->render($file);
+                    $fh = fopen($app['output'].'/'.preg_replace('/\.twig/', '.html', $file), 'w');
+                    fwrite($fh, $out);
+                    fclose($fh);
+                }
+            }
+        }
     }
 }
