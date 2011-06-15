@@ -8,8 +8,8 @@ use Cazalla\Application;
 
 $app = new Application();
 
-$app['twig.layouts']       = __DIR__.'/layouts';
-$app['twig.templates']       = __DIR__.'/content';
+$app['twig.layouts'] = __DIR__.'/layouts';
+$app['twig.templates'] = __DIR__.'/content';
 $app['twig.class_path'] = __DIR__.'/vendor/twig/lib';
 $app['output'] = __DIR__.'/output';
 

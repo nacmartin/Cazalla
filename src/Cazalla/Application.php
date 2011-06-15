@@ -17,12 +17,21 @@ class Application extends \Pimple
         });
     }
 
-    public function register_twig(){
+    /**
+     * registers Twig 
+     * 
+     * @return void
+     */
+    public function register_twig()
+    {
         $app = $this;
 
         //Register twig
         $app['twig'] = $app->share(function () use ($app) {
-            $twig = new \Twig_Environment($app['twig.loader'], isset($app['twig.options']) ? $app['twig.options'] : array());
+            $twig = new \Twig_Environment(
+                $app['twig.loader'],
+                isset($app['twig.options']) ? $app['twig.options'] : array()
+            );
             $twig->addGlobal('app', $app);
             return $twig;
         });
@@ -46,13 +55,23 @@ class Application extends \Pimple
 
         if ($handle = opendir($app['twig.templates'])) {
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != ".."){
-                    $out = $app['twig']->render($file);
+                if ($file != "." && $file != "..") {
+                    $out = $app->parse($file);
                     $fh = fopen($app['output'].'/'.preg_replace('/\.twig/', '.html', $file), 'w');
                     fwrite($fh, $out);
                     fclose($fh);
                 }
             }
         }
+    }
+
+    public function parse($file)
+    {
+        $content = file_get_contents($this['twig.templates'].'/'.$file, 'r');
+        $cls = $this['twig']->getTemplateClass($file);
+        eval('?>'.$this['twig']->compileSource($content, $file));
+        $templ = new $cls($this['twig']);
+        return $templ->render(array());
+
     }
 }
