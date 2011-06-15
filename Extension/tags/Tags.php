@@ -20,6 +20,10 @@ class TagsExtension implements ExtensionInterface
 
         $app->addModifier('tags', 'storeTags');
         $app->addPostModifier('tags', 'createTags');
+
+        if (isset($app['tags.decorator'])) {
+            $this->decorator = $app['tags.decorator'];
+        }
     }
 
 
@@ -38,7 +42,7 @@ class TagsExtension implements ExtensionInterface
     public function createTags()
     {
         $fh = fopen($this->app['cache'].'/tags.twig', 'w');
-        $strout = '{% extends "'.$this->app['tags.layout'].'" %}';
+        $strout = '{% extends "'.$this->decorator.'" %}';
         $strout .= '{% block tags %}';
         $strout .= "<ul>\n";
         foreach ($this->tags as $tag => $pages){

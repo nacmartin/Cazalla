@@ -18,7 +18,7 @@ $app['cache'] = __DIR__.'/cache';
 
 $app['autoloader']->registerNamespace('Tags', __DIR__.'/extensions/tags');
 
-$app->register(new Cazalla\Extension\TagsExtension(), array('tags.layout' => 'tagsLayout.twig'));
+$app->register(new Cazalla\Extension\TagsExtension(), array('tags.decorator' => 'tagsDecorator.twig'));
 
 $app->register_twig();
 
