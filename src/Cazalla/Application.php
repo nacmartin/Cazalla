@@ -5,6 +5,9 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 class Application extends \Pimple
 {
+    protected $modifiers = array();
+    protected $postModifiers = array();
+
     public function __construct()
     {
         $app = $this;
@@ -38,7 +41,7 @@ class Application extends \Pimple
 
         $app['twig.loader'] = $app->share(function () use ($app) {
             if (isset($app['twig.templates']) && isset($app['twig.layouts'])) {
-                return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'] ));
+                return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache']));
             }
         });
 
@@ -49,19 +52,29 @@ class Application extends \Pimple
 
     }
 
-    public function compile()
+    public function make()
     {
         $app = $this;
+        $pages = array();
 
         if ($handle = opendir($app['twig.templates'])) {
             while (false !== ($file = readdir($handle))) {
                 if ($file != "." && $file != "..") {
                     $page = $app->parse($file);
-                    $fh = fopen($app['output'].'/'.preg_replace('/\.twig/', '.html', $file), 'w');
-                    fwrite($fh, $page->getContent());
-                    fclose($fh);
+                    $fileOutputName = preg_replace('/\.twig/', '.html', $file);
+                    $page['ifilename'] = $file;
+                    $page['filename'] = $fileOutputName;
+                    $page = $this->executeModifiers($page);
+                    array_push($pages, $page);
                 }
             }
+        }
+        $this->executePostModifiers();
+        foreach ($pages as $page){
+            $fh = fopen($app['output'].'/'.$fileOutputName, 'w');
+            $page = $this->compile($page);
+            fwrite($fh, $page->getRenderedContent());
+            fclose($fh);
         }
     }
 
@@ -74,9 +87,18 @@ class Application extends \Pimple
             $content = $matches[2];
         }
         $cls = $this['twig']->getTemplateClass($file);
-        eval('?>'.$this['twig']->compileSource($content, $file));
-        $templ = new $cls($this['twig']);
-        return new Page($templ->render(array()), $parameters);
+        return new Page($content, $parameters, $cls);
+    }
+
+    public function compile($page)
+    {
+        eval('?>'.$this['twig']->compileSource($page->getContent(), $page['ifilename']));
+        //echo      $this['twig']->compileSource($page->getContent(), $page['ifilename']);
+
+        $className = $page->getClassName();
+        $templ = new $className($this['twig']);
+        $page->setRenderedContent($templ->render(array()));
+        return $page;
     }
 
     public function register(ExtensionInterface $extension, array $values = array())
@@ -88,4 +110,28 @@ class Application extends \Pimple
         $extension->register($this);
     }
 
+
+    public function addModifier($extension, $modifier)
+    {
+        array_push($this->modifiers, array('extension' => $extension, 'modifier' => $modifier));
+    }
+
+    public function addPostModifier($extension, $modifier)
+    {
+        array_push($this->postModifiers, array('extension' => $extension, 'modifier' => $modifier));
+    }
+
+    public function executeModifiers(Page $page)
+    {
+        foreach($this->modifiers as $modifier){
+            $page = $this[$modifier['extension']]->$modifier['modifier']($page);
+        }
+        return $page;
+    }
+
+    public function executePostModifiers(){
+        foreach($this->postModifiers as $modifier){
+            $this[$modifier['extension']]->$modifier['modifier']();
+        }
+    }
 }

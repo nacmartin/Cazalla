@@ -14,13 +14,12 @@ $app['twig.layouts'] = __DIR__.'/layouts';
 $app['twig.templates'] = __DIR__.'/content';
 $app['twig.class_path'] = __DIR__.'/vendor/twig/lib';
 $app['output'] = __DIR__.'/output';
+$app['cache'] = __DIR__.'/cache';
 
 $app['autoloader']->registerNamespace('Tags', __DIR__.'/extensions/tags');
 
-$app->register(new Cazalla\Extension\TagsExtension());
+$app->register(new Cazalla\Extension\TagsExtension(), array('tags.layout' => 'tagsLayout.twig'));
 
 $app->register_twig();
 
-$app['tags']->sayHi();
-
-$app->compile();
+$app->make();
