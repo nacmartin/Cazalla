@@ -77,6 +77,15 @@ class Application extends \Pimple
         eval('?>'.$this['twig']->compileSource($content, $file));
         $templ = new $cls($this['twig']);
         return new Page($templ->render(array()), $parameters);
-
     }
+
+    public function register(ExtensionInterface $extension, array $values = array())
+    {
+        foreach ($values as $key => $value) {
+            $this[$key] = $value;
+        }
+
+        $extension->register($this);
+    }
+
 }
