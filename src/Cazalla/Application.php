@@ -56,9 +56,9 @@ class Application extends \Pimple
         if ($handle = opendir($app['twig.templates'])) {
             while (false !== ($file = readdir($handle))) {
                 if ($file != "." && $file != "..") {
-                    $out = $app->parse($file);
+                    $page = $app->parse($file);
                     $fh = fopen($app['output'].'/'.preg_replace('/\.twig/', '.html', $file), 'w');
-                    fwrite($fh, $out);
+                    fwrite($fh, $page->getContent());
                     fclose($fh);
                 }
             }
@@ -68,10 +68,15 @@ class Application extends \Pimple
     public function parse($file)
     {
         $content = file_get_contents($this['twig.templates'].'/'.$file, 'r');
+        preg_match('/---(.*)---(.*)/s', $content, $matches);
+        if($matches){
+            $parameters = \sfYaml::load($matches[1]);
+            $content = $matches[2];
+        }
         $cls = $this['twig']->getTemplateClass($file);
         eval('?>'.$this['twig']->compileSource($content, $file));
         $templ = new $cls($this['twig']);
-        return $templ->render(array());
+        return new Page($templ->render(array()), $parameters);
 
     }
 }
