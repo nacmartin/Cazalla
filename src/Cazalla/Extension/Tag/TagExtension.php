@@ -1,11 +1,11 @@
 <?php
-namespace Cazalla\Extension;
+namespace Cazalla\Extension\Tag;
 
 use Cazalla\ExtensionInterface;
 use Cazalla\Application;
 use Cazalla\Page;
 
-class TagsExtension implements ExtensionInterface
+class TagExtension implements ExtensionInterface
 {
     private $tags = array();
     private $app;
