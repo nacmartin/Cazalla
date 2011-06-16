@@ -41,7 +41,7 @@ class Application extends \Pimple
 
         $app['twig.loader'] = $app->share(function () use ($app) {
             if (isset($app['twig.templates']) && isset($app['twig.layouts'])) {
-                return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache']));
+                return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache'].'/imports'));
             }
         });
 
@@ -69,9 +69,20 @@ class Application extends \Pimple
                 }
             }
         }
+        if (file_exists($app['cache'].'/pages') && $handle = opendir($app['cache'].'/pages')) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != "." && $file != "..") {
+                    $page = $app->parse($file);
+                    $fileOutputName = preg_replace('/\.twig/', '.html', $file);
+                    $page['ifilename'] = $file;
+                    $page['filename'] = $fileOutputName;
+                    array_push($pages, $page);
+                }
+            }
+        }
         $this->executePostModifiers();
         foreach ($pages as $page){
-            $fh = fopen($app['output'].'/'.$fileOutputName, 'w');
+            $fh = fopen($app['output'].'/'.$page['filename'], 'w');
             $page = $this->compile($page);
             fwrite($fh, $page->getRenderedContent());
             fclose($fh);

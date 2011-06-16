@@ -9,6 +9,7 @@ class TagsExtension implements ExtensionInterface
 {
     private $tags = array();
     private $app;
+    private $decorator = null;
 
     public function register(Application $app)
     {
@@ -26,14 +27,13 @@ class TagsExtension implements ExtensionInterface
         }
     }
 
-
     public function storeTags(Page $page)
     {
         foreach ($page['tags'] as $tag) {
             if (!array_key_exists($tag, $this->tags)) {
                 $this->tags[$tag] = array($page);
             }else{
-                array_push($this->tags, $page);
+                array_push($this->tags[$tag], $page);
             }
         }
         return $page;
@@ -41,16 +41,39 @@ class TagsExtension implements ExtensionInterface
 
     public function createTags()
     {
-        $fh = fopen($this->app['cache'].'/tags.twig', 'w');
-        $strout = '{% extends "'.$this->decorator.'" %}';
-        $strout .= '{% block tags %}';
+        if (!file_exists($this->app['cache'].'/imports')) {
+            mkdir($this->app['cache'].'/imports');
+        }
+        $fh = fopen($this->app['cache'].'/imports/tags.twig', 'w');
+        $strout = "";
+        if ($this->decorator){
+            $strout .= '{% extends "'.$this->decorator.'" %}';
+            $strout .= '{% block tags %}';
+        }
         $strout .= "<ul>\n";
         foreach ($this->tags as $tag => $pages){
-            $strout .="<li>$tag</li>\n";
+            $strout .="<li><a href='tags/".$tag.".html'>".$tag."</a></li>\n";
         }
         $strout .= "</ul>\n";
-        $strout .= '{% endblock %}';
+        if ($this->decorator){
+            $strout .= '{% endblock %}';
+        }
         fwrite($fh, $strout);
         fclose($fh);
+
+        //Create page for each tag
+        if (!file_exists($this->app['output'].'/tags')) {
+            mkdir($this->app['output'].'/tags');
+        }
+        foreach ($this->tags as $tag => $pages){
+            $strout = "";
+            $strout .=$tag."<ul>";
+            foreach ($pages as $page){
+                $title = isset($page['title']) ? $page['title'] : preg_replace('/\.[^\.]*$/', '',  $page['ifilename']);
+                $strout .="<li><a href='../".$page["filename"]."'>".$title."</a></li>";
+            }
+            $strout .="</ul>";
+            file_put_contents($this->app['output'].'/tags/'.$tag.'.html', $strout);
+        }
     }
 }
