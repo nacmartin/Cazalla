@@ -10,3 +10,9 @@
 [submodule "vendor/yaml"]
 	path = vendor/yaml
 	url = http://github.com/fabpot/yaml
+[submodule "vendor/Symfony/Component/Console"]
+	path = vendor/Symfony/Component/Console
+	url = https://github.com/symfony/Console.git
+[submodule "vendor/Symfony/Component/Finder"]
+	path = vendor/Symfony/Component/Finder
+	url = https://github.com/symfony/Finder.git
