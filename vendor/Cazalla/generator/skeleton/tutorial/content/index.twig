@@ -1,0 +1,49 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<h2>What is Cazalla?</h2>
+
+Cazalla is a tool for generating static websites. It is coded in PHP using Symfony2 components, so it may be specially friendly to Symfony and Twig users.
+
+<h2>Installation</h2>
+
+To start using Cazalla, first clone its repository:
+
+<pre>
+<code> git clone git://github.com/nacmartin/Cazalla.git </code>
+</pre>
+
+Then update submodules to obtain the dependences
+
+<pre>
+<code>
+cd Cazalla
+git submodule init
+git submodule update
+</code>
+</pre>
+
+Now you can start creating your site.
+
+<h2>Creating a project</h2>
+
+To create a project, run the following command:
+
+<pre>
+<code>
+app/console cazalla:create --skeleton=tutorial
+</code>
+</pre>
+
+<div class="note">You can ommit the --skeleton option if you want to create an empty project</div>
+
+Now, in the <code>project/</code> you will see a fresh new project created for you. If you want to compile it, run:
+
+<pre>
+<code>
+php tutorial.php
+</code>
+</pre>
+
+And Cazalla will generate the statically generated content in <code>project/output</code>.
+{% endblock %}

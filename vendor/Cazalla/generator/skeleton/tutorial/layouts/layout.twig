@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>{% block title %}{% endblock %} - Cazalla</title>
+  <link href="css/main.css" rel="stylesheet" type="text/css" />
+  <link href='http://fonts.googleapis.com/css?family=Lora&v1' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Nunito&v1' rel='stylesheet' type='text/css'>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      {% include "header.twig" %}
+    </div>
+    <div id="article">
+      {% block content %}{% endblock %}
+    </div>
+    <div id="aside">
+      {% include "sidebar.twig" %}
+    </div>
+    <div id="footer">
+      {% include "footer.twig" %}
+    </div>
+  </div>
+</body>
+</html>
