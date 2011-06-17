@@ -2,6 +2,7 @@
 namespace Cazalla;
 
 use Symfony\Component\ClassLoader\UniversalClassLoader;
+use Knplabs\Bundle\MarkdownBundle\Parser\MarkdownParser;
 
 class Application extends \Pimple
 {
@@ -22,6 +23,7 @@ class Application extends \Pimple
         $this['basedir'] = __DIR__.'/../../../..';
 
         $this->register_twig();
+        $this->register_markdown();
     }
 
     /**
@@ -56,8 +58,16 @@ class Application extends \Pimple
             return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache'].'/imports'));
         });
 
-        $app['autoloader']->registerPrefix('Twig_', $app['twig.class_path']);
 
+    }
+
+    public function register_markdown()
+    {
+        $app = $this;
+        $app['markdown'] = $app->share(function () use ($app) {
+            $features = isset($app['markdown.features']) ? $app['markdown.features'] : array();
+            return new MarkdownParser($features);
+        });
     }
 
     public function make()
@@ -69,7 +79,32 @@ class Application extends \Pimple
             while (false !== ($file = readdir($handle))) {
                 if ($file != "." && $file != "..") {
                     $page = $app->parse($file);
-                    $fileOutputName = preg_replace('/\.twig/', '.html', $file);
+
+                    //get the extension
+                    preg_match('/\.(.*)$/', $file, $matches);
+                    if ($matches){
+                        $extension = $matches[1];
+                    }else{
+                        //TODO: throw unknown format exception
+                    }
+
+                    switch ($extension){
+                    case 'twig':
+                        $fileOutputName = preg_replace('/\.twig/', '.html', $file);
+                        break;
+                    case 'md':
+                        $fileOutputName = preg_replace('/\.md/', '.html', $file);
+                        $newContent = '{% extends "layout.twig" %}';
+                        $newContent .= '{% block content %}';
+                        $newContent .= $app['markdown']->transform($page->getContent());
+                        $newContent .= '{% endblock %}';
+
+                        $page->setContent($newContent);
+                        break;
+                    default:
+                        //TODO: throw unknown format exception
+                    }
+
                     $page['ifilename'] = $file;
                     $page['filename'] = $fileOutputName;
                     $page = $this->executeModifiers($page);
@@ -84,6 +119,7 @@ class Application extends \Pimple
                     $fileOutputName = preg_replace('/\.twig/', '.html', $file);
                     $page['ifilename'] = $file;
                     $page['filename'] = $fileOutputName;
+                    $page = $this->executeModifiers($page);
                     array_push($pages, $page);
                 }
             }

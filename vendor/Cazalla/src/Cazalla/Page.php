@@ -49,6 +49,11 @@ class Page implements \ArrayAccess
         return $this->className;
     }
 
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
+
     public function offsetSet($offset, $value) {
         if (is_null($offset)) {
             $this->parameters[] = $value;

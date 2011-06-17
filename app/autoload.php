@@ -8,6 +8,7 @@ $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
     'Symfony' => __DIR__.'/../vendor',
     'Cazalla' => __DIR__.'/../vendor/Cazalla/src',
+    'Knplabs\\Bundle\\MarkdownBundle' => __DIR__.'/../vendor'
 ));
 $loader->registerPrefixes(array(
     'Pimple' => __DIR__.'/../vendor/pimple/lib',

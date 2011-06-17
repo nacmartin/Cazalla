@@ -16,3 +16,6 @@
 [submodule "vendor/Symfony/Component/Finder"]
 	path = vendor/Symfony/Component/Finder
 	url = https://github.com/symfony/Finder.git
+[submodule "vendor/Knplabs/Bundle/MarkdownBundle"]
+	path = vendor/Knplabs/Bundle/MarkdownBundle
+	url = https://github.com/knplabs/MarkdownBundle.git
