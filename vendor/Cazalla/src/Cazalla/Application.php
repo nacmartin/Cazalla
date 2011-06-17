@@ -50,6 +50,7 @@ class Application extends \Pimple
         $app['twig.templates'] = isset($app['twig.templates']) ? $app['twig.templates']: $basedir.'/project/content';
         $app['output'] = isset($app['output']) ? $app['output'] : $basedir.'/project/output';
         $app['cache'] = isset($app['cache']) ? $app['output'] : $basedir.'/project/cache';
+        $app['static'] = isset($app['static']) ? $app['static'] : $basedir.'/project/static';
 
         $app['twig.loader'] = $app->share(function () use ($app) {
             return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache'].'/imports'));
@@ -94,6 +95,9 @@ class Application extends \Pimple
             fwrite($fh, $page->getRenderedContent());
             fclose($fh);
         }
+
+        //finally, just copy static content
+        Util::recurse_copy($app['static'], $app['output']);
     }
 
     public function parse($file)

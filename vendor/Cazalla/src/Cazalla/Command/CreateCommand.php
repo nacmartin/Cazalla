@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
+use Cazalla\Util;
 
 class CreateCommand extends Command
 {
@@ -47,9 +48,9 @@ EOT
 
          $srcDir = $dirGenerator.'skeleton/'.$skeleton;
          if (is_dir($srcDir)) {
-             $this->recurse_copy($srcDir, $dirProject);
+            Util::recurse_copy($srcDir, $dirProject);
          }else{
-             $output->write("Skeleton <info>$skeleton</info> does not exist in <info>".$dirGenerator."skeleton/'</info>".PHP_EOL);
+            $output->write("Skeleton <info>$skeleton</info> does not exist in <info>".$dirGenerator."skeleton/'</info>".PHP_EOL);
          }
 
          $appName = $skeleton == 'empty' ? 'myApp.php' : $skeleton.".php";
@@ -58,27 +59,5 @@ EOT
          copy($srcApp, $dirBase.$appName);
     }
 
-    /**
-     * recursively copies a directory into another
-     * 
-     * @param string $src 
-     * @param string $dst 
-     * @return void
-     */
-    private function recurse_copy($src,$dst) {
-        $dir = opendir($src);
-        @mkdir($dst);
-        while(false !== ( $file = readdir($dir)) ) {
-            if (( $file != '.' ) && ( $file != '..' )) {
-                if ( is_dir($src . '/' . $file) ) {
-                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
-                }
-                else {
-                    copy($src . '/' . $file,$dst . '/' . $file);
-                }
-            }
-        }
-        closedir($dir);
-    }
 }
 
