@@ -19,6 +19,8 @@ class Application extends \Pimple
             return $loader;
         });
 
+        $this['basedir'] = __DIR__.'/../../../..';
+
         $this->register_twig();
     }
 
@@ -41,12 +43,12 @@ class Application extends \Pimple
             return $twig;
         });
 
-        $dirbase   = __DIR__.'/../../../..';
-        $app['twig.class_path'] = isset($app['twig.class_path']) ? $app['twig.class_path']: $dirbase.'/vendor/twig/lib/';
-        $app['twig.layouts'] = isset($app['twig.layouts']) ? $app['twig.layouts'] : $dirbase.'/layouts';
-        $app['twig.templates'] = isset($app['twig.templates']) ? $app['twig.templates']: $dirbase.'/content';
-        $app['output'] = isset($app['output']) ? $app['output'] : $dirbase.'/output';
-        $app['cache'] = isset($app['cache']) ? $app['output'] : $dirbase.'/cache';
+        $basedir   = $app['basedir'];
+        $app['twig.class_path'] = isset($app['twig.class_path']) ? $app['twig.class_path']: $basedir.'/vendor/twig/lib/';
+        $app['twig.layouts'] = isset($app['twig.layouts']) ? $app['twig.layouts'] : $basedir.'/layouts';
+        $app['twig.templates'] = isset($app['twig.templates']) ? $app['twig.templates']: $basedir.'/content';
+        $app['output'] = isset($app['output']) ? $app['output'] : $basedir.'/output';
+        $app['cache'] = isset($app['cache']) ? $app['output'] : $basedir.'/cache';
 
         $app['twig.loader'] = $app->share(function () use ($app) {
             return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache'].'/imports'));
