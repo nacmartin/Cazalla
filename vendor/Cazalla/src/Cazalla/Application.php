@@ -18,6 +18,8 @@ class Application extends \Pimple
 
             return $loader;
         });
+
+        $this->register_twig();
     }
 
     /**
@@ -39,16 +41,18 @@ class Application extends \Pimple
             return $twig;
         });
 
+        $dirbase   = __DIR__.'/../../../..';
+        $app['twig.class_path'] = isset($app['twig.class_path']) ? $app['twig.class_path']: $dirbase.'/vendor/twig/lib/';
+        $app['twig.layouts'] = isset($app['twig.layouts']) ? $app['twig.layouts'] : $dirbase.'/layouts';
+        $app['twig.templates'] = isset($app['twig.templates']) ? $app['twig.templates']: $dirbase.'/content';
+        $app['output'] = isset($app['output']) ? $app['output'] : $dirbase.'/output';
+        $app['cache'] = isset($app['cache']) ? $app['output'] : $dirbase.'/cache';
+
         $app['twig.loader'] = $app->share(function () use ($app) {
-            if (isset($app['twig.templates']) && isset($app['twig.layouts'])) {
-                return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache'].'/imports'));
-            }
+            return new \Twig_Loader_Filesystem(array($app['twig.templates'], $app['twig.layouts'], $app['cache'].'/imports'));
         });
 
-
-        if (isset($app['twig.class_path'])) {
-            $app['autoloader']->registerPrefix('Twig_', $app['twig.class_path']);
-        }
+        $app['autoloader']->registerPrefix('Twig_', $app['twig.class_path']);
 
     }
 
