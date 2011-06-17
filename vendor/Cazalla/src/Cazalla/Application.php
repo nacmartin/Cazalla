@@ -90,12 +90,14 @@ class Application extends \Pimple
 
                     switch ($extension){
                     case 'twig':
-                        $fileOutputName = preg_replace('/\.twig/', '.html', $file);
                         break;
                     case 'md':
-                        $fileOutputName = preg_replace('/\.md/', '.html', $file);
-                        $newContent = '{% extends "layout.twig" %}';
-                        $newContent .= '{% block content %}';
+                        $block = isset($page['block']) ? $page['block'] : 'content';
+                        $layout = isset($page['layout']) ? $page['layout'] : 'layout.twig';
+                        if ($layout != 'none'){
+                            $newContent = '{% extends "'.$layout.'" %}';
+                        }
+                        $newContent .= '{% block '.$block.' %}';
                         $newContent .= $app['markdown']->transform($page->getContent());
                         $newContent .= '{% endblock %}';
 
@@ -104,6 +106,7 @@ class Application extends \Pimple
                     default:
                         //TODO: throw unknown format exception
                     }
+                    $fileOutputName = preg_replace('/\.'.$extension.'$/', '.html', $file);
 
                     $page['ifilename'] = $file;
                     $page['filename'] = $fileOutputName;
