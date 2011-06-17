@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title> - Cazalla</title>
+  <link href="css/main.css" rel="stylesheet" type="text/css" />
+  <link href='http://fonts.googleapis.com/css?family=Lora&v1' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Nunito&v1' rel='stylesheet' type='text/css'>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <h1>Cazalla</h1>
+    </div>
+    <div id="article">
+      <h2>What is Cazalla?</h2>
+
+Cazalla is a tool for generating static websites. It is coded in PHP using Symfony2 components, so it may be specially friendly to Symfony and Twig users.
+
+<h2>Installation</h2>
+
+To start using Cazalla, first clone its repository:
+
+<pre>
+<code> git clone git://github.com/nacmartin/Cazalla.git </code>
+</pre>
+
+Then update submodules to obtain the dependences
+
+<pre>
+<code>
+cd Cazalla
+git submodule init
+git submodule update
+</code>
+</pre>
+
+Now you can start creating your site.
+
+<h2>Creating a project</h2>
+
+To create a project, run the following command:
+
+<pre>
+<code>
+app/console cazalla:create --skeleton=tutorial
+</code>
+</pre>
+
+<div class="note">You can ommit the --skeleton option if you want to create an empty project</div>
+
+Now, in the <code>project/</code> you will see a fresh new project created for you. If you want to compile it, run:
+
+<pre>
+<code>
+php tutorial.php
+</code>
+</pre>
+
+And Cazalla will generate the statically generated content in <code>project/output</code>.
+    </div>
+    <div id="aside">
+      <ul>
+<li><a href="index.html">Introduction</a></li>
+</ul>
+    </div>
+    <div id="footer">
+      Created with <a href="http://github.com/nacmartin/Cazalla">Cazalla</a>
+    </div>
+  </div>
+</body>
+</html>
