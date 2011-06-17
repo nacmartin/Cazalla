@@ -100,6 +100,7 @@ class Application extends \Pimple
     {
         $content = file_get_contents($this['twig.templates'].'/'.$file, 'r');
         preg_match('/---(.*)---(.*)/s', $content, $matches);
+        $parameters = null;
         if($matches){
             $parameters = \sfYaml::load($matches[1]);
             $content = $matches[2];

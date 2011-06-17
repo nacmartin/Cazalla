@@ -35,18 +35,27 @@ EOT
          $options = $input->getOptions();
 
          //Possible skeletons
-         $dirSkeletons = __DIR__.'/../../../skeleton/';
-         $dirProject   = __DIR__.'/../../../../../project/';
+         $dirGenerator = __DIR__.'/../../../generator/';
+         $dirBase   = __DIR__.'/../../../../../';
+         $dirProject   = $dirBase.'/project/';
 
          $skeleton = isset($options['skeleton']) ? $options['skeleton'] : 'empty';
 
-         $srcDir = $dirSkeletons.$skeleton;
-         if ( is_dir($srcDir = $dirSkeletons.'/'.$skeleton)) {
-             $this->recurse_copy($srcDir, $dirProject);
-         }else{
-             $output->write("Skeleton <info>$skeleton</info> does not exist in <info>$dirSkeletons</info>".PHP_EOL);
+         if (is_dir($dirProject)) {
+             mkdir($dirProject);
          }
 
+         $srcDir = $dirGenerator.'skeleton/'.$skeleton;
+         if (is_dir($srcDir)) {
+             $this->recurse_copy($srcDir, $dirProject);
+         }else{
+             $output->write("Skeleton <info>$skeleton</info> does not exist in <info>".$dirGenerator."skeleton/'</info>".PHP_EOL);
+         }
+
+         $appName = $skeleton == 'empty' ? 'myApp.php' : $skeleton.".php";
+
+         $srcApp = $dirGenerator.'app/myApp.php';
+         copy($srcApp, $dirBase.$appName);
     }
 
     /**
@@ -62,7 +71,7 @@ EOT
         while(false !== ( $file = readdir($dir)) ) {
             if (( $file != '.' ) && ( $file != '..' )) {
                 if ( is_dir($src . '/' . $file) ) {
-                    recurse_copy($src . '/' . $file,$dst . '/' . $file);
+                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
                 }
                 else {
                     copy($src . '/' . $file,$dst . '/' . $file);

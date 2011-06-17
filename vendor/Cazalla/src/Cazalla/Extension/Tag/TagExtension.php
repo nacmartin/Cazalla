@@ -29,6 +29,10 @@ class TagExtension implements ExtensionInterface
 
     public function storeTags(Page $page)
     {
+        if (!isset($pate['tags'])) {
+            return;
+        }
+
         foreach ($page['tags'] as $tag) {
             if (!array_key_exists($tag, $this->tags)) {
                 $this->tags[$tag] = array($page);
