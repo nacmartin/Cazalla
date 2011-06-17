@@ -44,6 +44,18 @@ h2 {
   margin-bottom: 60px;
 }
 
+.note {
+  margin: 10px;
+  padding: 10px;
+  background-color: #fcfcfc;
+  border: 1px solid #888;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #666;
+
+}
+
 #aside {
   float: right;
   width: 255px;
